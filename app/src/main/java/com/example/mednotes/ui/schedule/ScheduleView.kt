@@ -2,6 +2,7 @@ package com.example.mednotes.ui.schedule
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mednotes.data.Medicine
 import com.example.mednotes.data.ScheduleData
 import com.example.mednotes.data.ScheduleMomentData
 import com.example.mednotes.ui.theme.MomentSelectedBgColor
@@ -74,6 +76,7 @@ fun ScheduleMomentItemView(
     val medicines by remember { mutableStateOf(data.withMedicines)}
     val backgroundColor = if (isSelected) MomentSelectedBgColor else Color.White
     val contentColor = if (isSelected) Color.White else Color.Black
+    var isCollapsible by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -81,6 +84,9 @@ fun ScheduleMomentItemView(
             .height(54.dp)
             .background(backgroundColor, MaterialTheme.shapes.small)
             .padding(horizontal = 16.dp)
+            .clickable {
+                isCollapsible = !isCollapsible
+            }
     ) {
         Row(
             modifier = Modifier
@@ -127,4 +133,42 @@ fun ScheduleMomentItemView(
             )
         }
     }
+
+    if (isCollapsible) {
+        showMedicinesCollapsibleView(medicines, isSelected)
+    }
+}
+
+@Composable
+fun showMedicinesCollapsibleView(
+    medicines: List<Medicine>,
+    isSelected: Boolean,
+) {
+    medicines.forEach { medicine ->
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(54.dp)
+                .background(Color.White, MaterialTheme.shapes.small)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+
+        ) {
+
+            Text(
+                text = medicine.name,
+                style = MaterialTheme.typography.subtitle1,
+                color = Color.Black
+            )
+
+            RadioButton(
+                selected = isSelected,
+                enabled = false,
+                onClick = {}
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
 }

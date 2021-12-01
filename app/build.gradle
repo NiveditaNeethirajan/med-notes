@@ -58,4 +58,18 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+
+    //Navigation
+    implementation 'androidx.navigation:navigation-runtime-ktx:2.3.5'
+    implementation "androidx.navigation:navigation-compose:2.4.0-alpha02"
+
+    //Jetpack compose
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.12.0"
+    implementation "com.google.accompanist:accompanist-insets:0.12.0"
+    implementation "com.google.accompanist:accompanist-insets-ui:0.12.0"
+    implementation "com.google.accompanist:accompanist-coil:0.10.0"
+
+    //Dependency injection
+    implementation "io.insert-koin:koin-android:3.1.0"
+    implementation "io.insert-koin:koin-androidx-compose:3.1.0"
 }

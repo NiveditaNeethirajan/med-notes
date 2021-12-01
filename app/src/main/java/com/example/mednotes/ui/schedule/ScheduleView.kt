@@ -15,12 +15,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mednotes.R
 import com.example.mednotes.data.Medicine
 import com.example.mednotes.data.ScheduleData
 import com.example.mednotes.data.ScheduleMomentData
+import com.example.mednotes.data.ScheduleWeeklyData
 import com.example.mednotes.ui.theme.MomentSelectedBgColor
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
 import org.koin.androidx.compose.getViewModel
 
 @Preview
@@ -30,10 +37,41 @@ fun PreviewScheduleViewComponent() {
         ScheduleViewComponent()
     }
 }
-
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ScheduleViewComponent(
     viewModel: ScheduleViewModel = getViewModel()
+) {
+    val pagerState = rememberPagerState(
+        pageCount = 2,
+        initialOffscreenLimit = 2,
+    )
+    Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        HorizontalPagerIndicator(
+            pagerState = pagerState,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(16.dp),
+            activeColor = Color.Black,
+            inactiveColor = Color.LightGray
+        )
+
+        HorizontalPager(state = pagerState) { page ->
+            when (page) {
+                0 -> ScheduleMomentsView(viewModel)
+                1 -> WeeklyMedicineOverview(viewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun ScheduleMomentsView(
+    viewModel: ScheduleViewModel
 ) {
     LazyColumn(
         modifier = Modifier
@@ -44,6 +82,46 @@ fun ScheduleViewComponent(
             ScheduleMomentsGroupView(data = scheduleData, viewModel)
         }
     }
+}
+
+@Composable
+fun WeeklyMedicineOverview(
+    viewModel: ScheduleViewModel
+) {
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 24.dp, horizontal = 16.dp)
+    ) {
+        items(viewModel.weeklyData) { weeklyData ->
+            ScheduleMomentsWeeklyView(data = weeklyData)
+        }
+    }
+}
+
+@Composable
+fun ScheduleMomentsWeeklyView(
+    data: ScheduleWeeklyData
+) {
+    Text(
+        text = data.timeLabel,
+        style = MaterialTheme.typography.h6,
+        color = Color.Black
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    data.medicineName.forEach { medicineName ->
+        Text(
+            text = medicineName,
+            style = MaterialTheme.typography.subtitle1,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
 }
 
 @Composable

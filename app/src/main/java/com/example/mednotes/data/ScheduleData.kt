@@ -13,3 +13,13 @@ data class ScheduleMomentData(
     val withMedicines: List<Medicine>,
     var isCollapsed: Boolean = false
 )
+
+data class ScheduleWeeklyData(
+    val timeLabel: String,
+    val medicineName: List<String>
+)
+
+enum class ScheduleViewMode {
+    Week,
+    Month
+}

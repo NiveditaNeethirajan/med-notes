@@ -21,3 +21,24 @@ fun Date.getEndOfDay(days: Int): Date {
     calendar.set(Calendar.SECOND, 59)
     return calendar.time
 }
+
+fun Date.getStartOfWeek(week: Int): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar.add(Calendar.WEEK_OF_YEAR, week)
+    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    return calendar.time
+}
+
+fun Date.getEndOfWeek(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar.add(Calendar.DATE, 6)
+    calendar.set(Calendar.HOUR_OF_DAY, 23)
+    calendar.set(Calendar.MINUTE, 59)
+    calendar.set(Calendar.SECOND, 59)
+    return calendar.time
+}

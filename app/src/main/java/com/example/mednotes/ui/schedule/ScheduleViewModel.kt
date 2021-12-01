@@ -8,11 +8,16 @@ import com.example.mednotes.api.MomentsApi.Companion.GetMoments
 import com.example.mednotes.data.Medicine
 import com.example.mednotes.data.ScheduleMomentData
 import com.example.mednotes.usecase.toMonthlyScheduleMomentsData
+import com.example.mednotes.usecase.toWeeklyScheduleMomentsData
 
 class ScheduleViewModel : ViewModel() {
 
     var scheduleData by mutableStateOf(
         GetMoments.toMonthlyScheduleMomentsData()
+    )
+
+    var weeklyData  by mutableStateOf(
+        GetMoments.toWeeklyScheduleMomentsData()
     )
 
     fun updateAllMedicines(

@@ -1,5 +1,7 @@
 package com.example.mednotes.data
 
+import java.util.*
+
 data class ScheduleData(
     val label: String,
     val moments : List<ScheduleMomentData>,
@@ -16,7 +18,20 @@ data class ScheduleMomentData(
 
 data class ScheduleWeeklyData(
     val timeLabel: String,
-    val medicineName: List<String>
+    val data: List<ScheduleWeeklyMedicineData>,
+)
+
+data class ScheduleWeeklyMedicineData(
+    val medicineName: String,
+    var weeklyMomentData: List<ScheduleWeeklyMomentData>
+)
+
+data class ScheduleWeeklyMomentData(
+    val momentTitle: String,
+    val medicineName: String,
+    val isTaken: Boolean,
+    val day: String,
+    val time: String
 )
 
 enum class ScheduleViewMode {

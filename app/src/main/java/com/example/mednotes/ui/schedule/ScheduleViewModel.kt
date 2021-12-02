@@ -16,7 +16,7 @@ class ScheduleViewModel : ViewModel() {
         GetMoments.toMonthlyScheduleMomentsData()
     )
 
-    var weeklyData  by mutableStateOf(
+    var scheduleWeeklyData  by mutableStateOf(
         GetMoments.toWeeklyScheduleMomentsData()
     )
 

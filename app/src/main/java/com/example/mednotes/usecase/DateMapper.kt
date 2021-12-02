@@ -1,5 +1,6 @@
 package com.example.mednotes.usecase
 
+import java.text.SimpleDateFormat
 import java.util.*
 
 fun Date.getStartOfDay(days: Int): Date {
@@ -41,4 +42,13 @@ fun Date.getEndOfWeek(): Date {
     calendar.set(Calendar.MINUTE, 59)
     calendar.set(Calendar.SECOND, 59)
     return calendar.time
+}
+
+fun parseDate(at: String): Date? {
+    val input = SimpleDateFormat("yyyy-MM-dd HH:mm")
+    return try {
+        input.parse(at)
+    } catch (e: Exception) {
+        null
+    }
 }

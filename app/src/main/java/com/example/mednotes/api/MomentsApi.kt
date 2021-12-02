@@ -1,23 +1,13 @@
 package com.example.mednotes.api
 
-
 import com.example.mednotes.R
 import com.example.mednotes.data.Medicine
 import com.example.mednotes.data.Moment
-import java.text.SimpleDateFormat
+import com.example.mednotes.usecase.parseDate
 import java.util.*
 
 class MomentsApi {
     companion object {
-
-        private fun parseDate(at: String): Date? {
-            val input = SimpleDateFormat("yyyy-MM-dd HH:mm")
-            return try {
-                input.parse(at)
-            } catch (e: Exception) {
-                null
-            }
-        }
 
         private fun breakfast(day: String): Moment {
             return Moment(
@@ -25,10 +15,6 @@ class MomentsApi {
                 at = parseDate("2019-01-$day 08:00")!!,
                 withIcon = R.drawable.ic_breakfast,
                 withMedicines = listOf(
-                    Medicine(
-                        name = "Paracetamol",
-                        isTaken = Random().nextBoolean()
-                    ),
                     Medicine(
                         name = "Paracetamol",
                         isTaken = Random().nextBoolean()

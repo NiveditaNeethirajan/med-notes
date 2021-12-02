@@ -7,7 +7,7 @@ import java.util.*
 
 private const val NUMBER_OF_WEEKS = 52
 
-fun List<Moment>.toMonthlyScheduleMomentsData() : List<ScheduleData> {
+fun List<Moment>.toMonthlyScheduleMomentsData(): List<ScheduleData> {
     if (this.isEmpty())
         return emptyList()
     val scheduleDataList = mutableListOf<ScheduleData>()
@@ -21,7 +21,7 @@ fun List<Moment>.toMonthlyScheduleMomentsData() : List<ScheduleData> {
         if (moments.isNotEmpty()) {
             scheduleDataList.add(
                 ScheduleData(
-                    label = formatLabel(start),
+                    label = formatLabel(start, ScheduleViewMode.Month),
                     moments = moments.toScheduleMomentData(),
                     isCollapsed = false
                 )
@@ -44,10 +44,28 @@ fun List<Moment>.toWeeklyScheduleMomentsData(): List<ScheduleWeeklyData> {
             it.at in start..end
         }
         if (moments.isNotEmpty()) {
+            val data = moments.toScheduleWeeklyMedicineData()
+            val filteredData = mutableListOf<ScheduleWeeklyMedicineData>()
+            data.forEach { medicineData ->
+                val duplicate =
+                    filteredData.firstOrNull { it.medicineName == medicineData.medicineName }
+                if (duplicate == null) {
+                    filteredData.add(medicineData)
+                } else {
+                    filteredData.remove(duplicate)
+                    filteredData.add(
+                        ScheduleWeeklyMedicineData(
+                            medicineName = medicineData.medicineName,
+                            weeklyMomentData =
+                            duplicate.weeklyMomentData.plus(medicineData.weeklyMomentData)
+                        )
+                    )
+                }
+            }
             scheduleDataList.add(
                 ScheduleWeeklyData(
-                    timeLabel  = formatLabel(start, ScheduleViewMode.Week),
-                    medicineName = moments.toMedicineNames()
+                    timeLabel = getStartEndOfWeek(start),
+                    data = filteredData
                 )
             )
         }
@@ -55,11 +73,41 @@ fun List<Moment>.toWeeklyScheduleMomentsData(): List<ScheduleWeeklyData> {
     return scheduleDataList
 }
 
+private fun List<Moment>.toScheduleWeeklyMedicineData(): List<ScheduleWeeklyMedicineData> {
+    val scheduleWeeklyMedicineDataList = mutableListOf<ScheduleWeeklyMedicineData>()
+    this.map { moment ->
+        moment.withMedicines.forEach { medicine ->
+            scheduleWeeklyMedicineDataList.add(
+                ScheduleWeeklyMedicineData(
+                    weeklyMomentData = toScheduleWeeklyMomentData(moment),
+                    medicineName = medicine.name,
+                )
+            )
+        }
+    }
+    return scheduleWeeklyMedicineDataList
+}
+
+private fun toScheduleWeeklyMomentData(moment: Moment): List<ScheduleWeeklyMomentData> {
+    val scheduleWeeklyMomentDataList = mutableListOf<ScheduleWeeklyMomentData>()
+    moment.withMedicines.forEach { medicine ->
+        scheduleWeeklyMomentDataList.add(
+            ScheduleWeeklyMomentData(
+                momentTitle = moment.title,
+                medicineName = medicine.name,
+                isTaken = medicine.isTaken,
+                day = formatDay(moment.at),
+                time = formatTime(moment.at)
+            )
+        )
+    }
+    return scheduleWeeklyMomentDataList
+}
 
 private fun List<Moment>.toScheduleMomentData(): List<ScheduleMomentData> {
     return this.map { moment ->
         ScheduleMomentData(
-            title =  moment.title,
+            title = moment.title,
             timeLabel = formatTime(moment.at),
             iconResource = moment.withIcon,
             withMedicines = moment.withMedicines,
@@ -68,32 +116,23 @@ private fun List<Moment>.toScheduleMomentData(): List<ScheduleMomentData> {
     }
 }
 
-private fun List<Moment>.toMedicineNames(): List<String> {
-    return this.map { moment ->
-        moment.withMedicines.map { it.name }.distinct().joinToString()
-    }
-}
-
 private fun formatLabel(date: Date, mode: ScheduleViewMode): String {
     val pattern = when (mode) {
         ScheduleViewMode.Month -> "EEEE dd MMMM"
-        ScheduleViewMode.Week -> "w"
+        ScheduleViewMode.Week -> "MMM dd"
     }
-    val simpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
-    val title = simpleDateFormat.format(date)
-    return if(mode == ScheduleViewMode.Week) {
-         "Week no - "+title + ") " +getStartEndOfWeek(date)
-    } else title
-}
-
-private fun formatLabel(date: Date): String {
-    val pattern = "EEEE dd MMMM"
     val simpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
     return simpleDateFormat.format(date)
 }
 
 private fun formatTime(date: Date): String {
     val pattern = "HH:mm"
+    val simpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
+    return simpleDateFormat.format(date)
+}
+
+private fun formatDay(date: Date): String {
+    val pattern = "MMM d"
     val simpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
     return simpleDateFormat.format(date)
 }
@@ -112,9 +151,7 @@ private fun getStartEndOfWeek(date: Date): String {
     val endOfWeek = calendar.time.getEndOfWeek()
     val endCalendar = Calendar.getInstance()
     endCalendar.time = endOfWeek
-    return String.format(
-        "%02d - %02d ",
-        calendar.get(Calendar.DATE),
-        endCalendar.get(Calendar.DATE)
-    )
+    return "${formatLabel(calendar.time, ScheduleViewMode.Week)} " +
+            " - " +
+            " ${formatLabel(endCalendar.time, ScheduleViewMode.Week)}"
 }
